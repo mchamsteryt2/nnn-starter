@@ -70,7 +70,7 @@
         "panel-toggle"
         "launcher"
       ];
-      "Mod+B".action.spawn "firefox"; # browser
+      "Mod+B".action.spawn = "firefox"; # browser
       "Mod+E".action.spawn = "nautilus"; # file manager
 
       # Window management
