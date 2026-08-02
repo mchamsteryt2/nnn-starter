@@ -54,7 +54,6 @@
   # 4. Required systemic backends for user profiles & seat authentication
   security.polkit.enable = true;
   services.accountsservice.enable = true; 
-}
 
 
   # Brightness keys are handled by brightnessctl (installed in desktop.nix),
