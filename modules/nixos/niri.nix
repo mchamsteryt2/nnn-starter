@@ -55,6 +55,11 @@
   security.polkit.enable = true;
   services.accounts-daemon.enable = true;
 
+  # 5. Fix Noctalia Greeter startup crash by creating its state directory
+  # This provisions the missing folder path and gives ownership to the greetd user
+  systemd.tmpfiles.rules = [
+    "d /var/lib/noctalia-greeter 0755 greeter greetd - -"
+  ];
 
   # Brightness keys are handled by brightnessctl (installed in desktop.nix),
   # which talks to logind and needs no extra privileges in a session.
