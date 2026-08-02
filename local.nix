@@ -9,16 +9,16 @@
 # Put your real identity below; it flows into flake.nix and the modules.
 {
   # Login user and machine identity.
-  username = "nnn";
-  hostName = "nnn";
-  fullName = "NNN"; # shown as the user account description
+  username = "maxh";
+  hostName = "maxh-linuxbox";
+  fullName = "Max Hurren"; # shown as the user account description
 
   # Locale / location.
-  timeZone = "Europe/Amsterdam";
+  timeZone = "America/New_York";
 
   # Git identity (modules/home/git.nix).
-  gitUserName = "NNN";
-  gitUserEmail = "you@example.com";
+  gitUserName = "mchamsteryt2";
+  gitUserEmail = "hurrenmatthew2000@gmail.com";
 
   # Primary display scale (modules/home/niri.nix, output eDP-1).
   monitorScale = 1.0;
