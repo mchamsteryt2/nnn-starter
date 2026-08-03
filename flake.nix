@@ -37,6 +37,7 @@
     home-manager,
     niri,
     noctalia,
+    noctalia-greeter, # FIXED: Added to argument list
     stylix,
     ...
   } @ inputs: let
@@ -65,6 +66,7 @@
       modules = [
         niri.nixosModules.niri
         noctalia.nixosModules.default
+        noctalia-greeter.nixosModules.default # FIXED: Loaded the module into the system configuration
         stylix.nixosModules.stylix
         home-manager.nixosModules.home-manager
 
