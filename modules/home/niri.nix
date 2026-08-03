@@ -5,11 +5,11 @@
 
     prefer-no-csd = true;
 
-    # FIXED: Corrected schema to use 'matches' instead of 'match' as per niri-flake specification
+    # FIXED: Re-mapped to open-maximized-to-edges with correct attribute values
     window-rules = [
       {
-        matches = [ { } ]; # An empty attribute set matches all windows unconditionally
-        open-maximized = true;
+        matches = [ { } ]; # Matches all windows unconditionally
+        open-maximized-to-edges = true;
       }
     ];
 
@@ -85,8 +85,8 @@
       # Window management
       "Mod+Q".action.close-window = {};
       
-      # FIXED MAXIMIZATION: Maps the true multi-axis maximize action block smoothly
-      "Mod+F".action.maximize-window-to-edges = {}; 
+      # FIXED MAXIMIZATION: Mapped to maximize-column which forces the active layout to occupy 100% vertical scaling bounds
+      "Mod+F".action.maximize-column = {}; 
       
       "Mod+Shift+F".action.fullscreen-window = {};
       "Mod+W".action.toggle-column-tabbed-display = {};
@@ -137,8 +137,6 @@
       "XF86AudioPlay".action.spawn = ["playerctl" "play-pause"];
       "XF86AudioNext".action.spawn = ["playerctl" "next"];
       "XF86AudioPrev".action.spawn = ["playerctl" "previous"];
-      # Internal panel. modules/nixos/apple-studio-display.nix overrides these to
-      # also drive a docked Apple Studio Display when that module is enabled.
       "XF86MonBrightnessUp".action.spawn = ["brightnessctl" "set" "5%+"];
       "XF86MonBrightnessDown".action.spawn = ["brightnessctl" "set" "5%-"];
     };
