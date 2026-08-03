@@ -42,7 +42,7 @@
     };
   };
 
-  # 2. CORRECTED: Structured cleanly inside a single attribute set
+  # 2. FIXED: Nested properly inside a structured attribute set block
   users.users.greeter = {
     extraGroups = [ "video" "input" ];
     isSystemUser = true;
