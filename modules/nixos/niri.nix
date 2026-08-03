@@ -42,9 +42,10 @@
     };
   };
 
-  # 2. Add the greeter user to necessary groups to ensure hardware capabilities can mount
-  users.users.greeter.extraGroups = [ "video" "input" ];
-  isSystemUser = true;
+  # 2. Correctly structure the greeter system user definition
+  users.users.greeter = {
+    extraGroups = [ "video" "input" ];
+    isSystemUser = true;
     group = "greetd"; # greetd is the default group created by services.greetd
   };
 
