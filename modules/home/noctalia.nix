@@ -8,34 +8,33 @@
   programs.noctalia = {
     enable = true;
 
-    # Prebuilt package from noctalia.cachix.org (see modules/nixos/noctalia.nix).
-    package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    # FIXED: Wraps the prebuilt cache package to bake native Git, Curl, and Coreutils 
+    # directly into the runtime context, stopping downloads from crashing and vanishing.
+    package = (inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (oldAttrs: {
+      nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [ pkgs.makeWrapper ];
+      postInstall = (oldAttrs.postInstall or "") + ''
+        wrapProgram $out/bin/noctalia-shell \
+          --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.git pkgs.wget pkgs.curl pkgs.coreutils ]}
+      '';
+    }));
 
     # Run as a systemd user service tied to the graphical (niri) session so it
     # starts and stops with your login.
     systemd.enable = true;
 
-    # REGISTER SOURCING HUBS: Noctalia clones these and discovers ALL available plugins inside them automatically.
+    # FIXED REGISTER SOURCING HUBS: Restored precise target paths instead of flat root domains.
+    # Leaving out the rigid static list lets you safely manage activations directly in the UI.
     plugins.sources = [
       {
         enabled = true;
         name = "Official Noctalia Plugins";
-        url = "https://github.com";
+        url = "https://github.com/noctalia-dev/official-plugins";
       }
       {
         enabled = true;
         name = "Community Noctalia Plugins";
-        url = "https://github.com";
+        url = "https://github.com/noctalia-dev/community-plugins";
       }
-    ];
-
-    # DECLARE ACTIVE LIST: You just list the folder names you want enabled. 
-    # Noctalia automatically maps, downloads, and spins them up on boot.
-    plugins.enabled = [
-      "noctalia/screen_recorder"
-      "noctalia/calculator"
-      "noctalia/timer"
-      "community/niri-workspaces"
     ];
 
     # Configure the shell appearance options natively right inside the module layout
