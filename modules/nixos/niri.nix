@@ -42,11 +42,11 @@
     };
   };
 
-  # 2. Correctly structure the greeter system user definition
+  # 2. CORRECTED: Structured cleanly inside a single attribute set
   users.users.greeter = {
     extraGroups = [ "video" "input" ];
     isSystemUser = true;
-    group = "greetd"; # greetd is the default group created by services.greetd
+    group = "greetd"; 
   };
 
   # 3. Declaratively output the greeter's configuration file onto the disk
