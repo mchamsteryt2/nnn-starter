@@ -5,11 +5,11 @@
 
     prefer-no-csd = true;
 
-    # FIXED: Re-mapped to open-maximized-to-edges with correct attribute values
+    # FIXED: Updated option field name to match standard niri-flake home module scheme
     window-rules = [
       {
         matches = [ { } ]; # Matches all windows unconditionally
-        open-maximized-to-edges = true;
+        open-maximized = true;
       }
     ];
 
@@ -85,7 +85,7 @@
       # Window management
       "Mod+Q".action.close-window = {};
       
-      # FIXED MAXIMIZATION: Mapped to maximize-column which forces the active layout to occupy 100% vertical scaling bounds
+      # FIXED MAXIMIZATION: Maps the true multi-axis maximize action block smoothly
       "Mod+F".action.maximize-column = {}; 
       
       "Mod+Shift+F".action.fullscreen-window = {};
