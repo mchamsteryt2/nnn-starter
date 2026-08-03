@@ -63,10 +63,12 @@
     nixosConfigurations.nnn = nixpkgs.lib.nixosSystem {
       system = hostSystem;
       specialArgs = {inherit inputs username local;};
-      modules = [
+       modules = [
+        # 1. ADD THIS SPECIFIC LINE RIGHT HERE:
+        inputs.noctalia-greeter.nixosModules.default
+
         niri.nixosModules.niri
         noctalia.nixosModules.default
-        noctalia-greeter.nixosModules.default # FIXED: Loaded the module into the system configuration
         stylix.nixosModules.stylix
         home-manager.nixosModules.home-manager
 
