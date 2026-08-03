@@ -31,23 +31,16 @@
   services.greetd = {
     enable = true;
     
-    # Instruct systemd to spin up a fully compliant PAM login session.
-    # This automatically provisions a proper numeric /run/user/<UID> folder,
-    # configures standard XDG variables, and sets up D-Bus paths cleanly.
-    vt = 7;
-    
     settings.default_session = {
-      command = "${inputs.noctalia-greeter.packages.${pkgs.system}.default}/bin/noctalia-greeter-session";
+      # Running this inside dbus-run-session guarantees a proper session bus is initialized,
+      # which prevents the greeter compositor from panicking when it queries display targets.
+      command = "${pkgs.dbus}/bin/dbus-run-session ${inputs.noctalia-greeter.packages.${pkgs.system}.default}/bin/noctalia-greeter-session";
       user = "greeter";
     };
   };
 
-  # 2. FIXED: All greeter system user keys are grouped inside a single attribute set
-  users.users.greeter = {
-    extraGroups = [ "video" "input" ];
-    isSystemUser = true;
-    group = "greetd"; # greetd is the default group created by services.greetd
-  };
+  # 2. Section #2 has been completely removed to avoid malformed account definitions.
+  # greetd handles creating its own greeter user automatically behind the scenes.
 
   # 3. Declaratively output the greeter's configuration file onto the disk
   environment.etc."noctalia-greeter/greeter.toml".text = ''
@@ -63,11 +56,16 @@
   security.polkit.enable = true;
   services.accounts-daemon.enable = true;
 
-  # 5. Handle permanent state folder paths securely
-  # Keep only persistent state rules. Dynamic run paths are generated via logind vt blocks.
+  # 5. Handle state folder paths securely and provide a valid cache location
+  # This provisions the state directories and explicitly overrides the shader cache path
+  # so that Mesa doesn't try to write to the read-only /var/empty/ directory.
   systemd.tmpfiles.rules = [
     "d /var/lib/noctalia-greeter 0755 greeter greetd - -"
+    "d /var/cache/noctalia-greeter 0755 greeter greetd - -"
   ];
+
+  # Force the greeter user to use the newly created cache folder for its shaders
+  environment.variables.XDG_CACHE_HOME = "/var/cache/noctalia-greeter";
 
   # Brightness keys are handled by brightnessctl (installed in desktop.nix),
   # which talks to logind and needs no extra privileges in a session.
