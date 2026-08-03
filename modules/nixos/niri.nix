@@ -40,6 +40,10 @@
     };
   };
 
+  # Give the system greeter account necessary hardware access
+  users.users.greeter.extraGroups = [ "video" "input" ];
+
+
   # 3. Declaratively output the greeter's configuration file onto the disk
   environment.etc."noctalia-greeter/greeter.toml".text = ''
     [session]
