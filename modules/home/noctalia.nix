@@ -22,7 +22,7 @@
     package = (inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (oldAttrs: {
       nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [ pkgs.makeWrapper ];
       postInstall = (oldAttrs.postInstall or "") + ''
-        wrapProgram $out/bin/noctalia-shell \
+        wrapProgram $out/bin/noctalia \
           --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.git pkgs.wget pkgs.curl pkgs.coreutils ]}
       '';
     }));
