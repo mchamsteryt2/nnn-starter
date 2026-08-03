@@ -13,10 +13,12 @@
 
   # Firefox Browser Configuration
   programs.firefox = {
-  enable = true;
-  configPath = ".config/mozilla/firefox";
-};
+    enable = true;
     
+    # FIXED: Directs Firefox to adopt the modern XDG standard configuration directory path
+    configPath = ".config/mozilla/firefox";
+      
+    # FIXED: Re-nested profiles directly inside the programs.firefox attribute block
     profiles.default = {
       id = 0;
       name = "default";
