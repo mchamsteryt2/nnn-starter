@@ -4,7 +4,6 @@
     ./zsh.nix
     ./starship.nix
     ./git.nix
-    ./ghostty.nix
     ./neovim.nix
     ./zed.nix
     ./gtk.nix
