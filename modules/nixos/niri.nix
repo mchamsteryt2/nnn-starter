@@ -27,43 +27,30 @@
     };
   };
 
-  # 1. Structural greetd service unit pointing to the correct session entry point
-  services.greetd = {
+  # 1. FIXED: Leverage the official Noctalia Greeter module cleanly
+  # This automatically sets up services.greetd, registers the 'greeter' user, 
+  # configures dbus wrappers, and resolves the Mesa shader caching permission flags.
+  programs.noctalia-greeter = {
     enable = true;
     
-    settings.default_session = {
-      # FIXED: The XDG_CACHE_HOME variable is explicitly declared here.
-      # This forces the underlying Mesa/OpenGL stack to use our custom writable 
-      # folder instead of crashing on the read-only /var/empty/ directory.
-      command = "env XDG_CACHE_HOME=/var/cache/noctalia-greeter ${pkgs.dbus}/bin/dbus-run-session ${inputs.noctalia-greeter.packages.${pkgs.system}.default}/bin/noctalia-greeter-session";
-      user = "greeter";
+    # Passes required session hooks down to the launcher automation script
+    greeter-args = "--session niri-session";
+
+    # Declaratively populates /var/lib/noctalia-greeter/greeter.toml perfectly
+    settings = {
+      session = {
+        default = "niri-session";
+      };
+      appearance = {
+        cursor_theme = "Bibata-Modern-Ice";
+        cursor_size = 24;
+      };
     };
   };
 
-  # Give the system greeter account necessary hardware access
-  users.users.greeter.extraGroups = [ "video" "input" ];
-
-
-  # 3. Declaratively output the greeter's configuration file onto the disk
-  environment.etc."noctalia-greeter/greeter.toml".text = ''
-    [session]
-    default = "niri-session"
-
-    [appearance]
-    cursor_theme = "Bibata-Modern-Ice"
-    cursor_size = 24
-  '';
-
-  # 4. Required systemic backends for user profiles & seat authentication
+  # 2. Required systemic backends for user profiles & seat authentication
   security.polkit.enable = true;
-  services.accounts-daemon.enable = true;
-
-  # 5. Handle state folder paths securely and provide a valid cache location
-  # This provisions the state directories and explicitly overrides the shader cache path
-  systemd.tmpfiles.rules = [
-    "d /var/lib/noctalia-greeter 0755 greeter greetd - -"
-    "d /var/cache/noctalia-greeter 0755 greeter greetd - -"
-  ];
+  services.accounts-daemon.enable = true; # Required by noctalia-greeter for user profiles
 
   # Brightness keys are handled by brightnessctl (installed in desktop.nix),
   # which talks to logind and needs no extra privileges in a session.
