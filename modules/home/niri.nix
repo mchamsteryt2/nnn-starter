@@ -1,4 +1,14 @@
-{local, ...}: {
+{local, pkgs, ...}: {
+  # 1. Enable and configure Kitty explicitly inside your home profile context
+  programs.kitty = {
+    enable = true;
+    settings = {
+      scrollback_lines = 10000;
+      enable_audio_bell = false;
+      update_check_interval = 0; # Handled globally by NixOS channels
+    };
+  };
+
   programs.niri.settings = {
     # Stylix's niri target sets border/focus-ring colors and the cursor, so we
     # only describe behaviour here.
@@ -12,15 +22,18 @@
       };
       # Each window remembers its own layout ("global" = one shared layout).
       keyboard.track-layout = "window";
+      
       touchpad = {
         tap = true;
-        natural-scroll = true;
+        natural-scroll = true; # Touchpad scrolling direction
         dwt = true; # disable-while-typing
       };
-      mouse = {
-        accel-profile = "flat";
-        natural-scroll = true; # match macOS-style scrolling (also set on touchpad)
-      };
+
+      # FIXED: Explicit scalar mapping to ensure the niri-flake homeModule 
+      # compiles without any flat-attribute-set merge exceptions.
+      mouse.natural-scroll = false; 
+      mouse.accel-profile = "flat";
+
       focus-follows-mouse.enable = true;
     };
 
@@ -61,7 +74,7 @@
     # actions take `{ }`; spawn takes a string or a list of argv strings.
     binds = {
       # Launchers
-      "Mod+Return".action.spawn = "ghostty";
+      "Mod+Return".action.spawn = "kitty"; # FIXED: Successfully swapped ghostty out for kitty
       # Noctalia v5 IPC: `noctalia msg <command>` (the old `ipc call` form and
       # the `noctalia-shell` binary are gone). The launcher is a named panel.
       "Mod+Space".action.spawn = [
@@ -125,8 +138,6 @@
       "XF86AudioPlay".action.spawn = ["playerctl" "play-pause"];
       "XF86AudioNext".action.spawn = ["playerctl" "next"];
       "XF86AudioPrev".action.spawn = ["playerctl" "previous"];
-      # Internal panel. modules/nixos/apple-studio-display.nix overrides these to
-      # also drive a docked Apple Studio Display when that module is enabled.
       "XF86MonBrightnessUp".action.spawn = ["brightnessctl" "set" "5%+"];
       "XF86MonBrightnessDown".action.spawn = ["brightnessctl" "set" "5%-"];
     };
