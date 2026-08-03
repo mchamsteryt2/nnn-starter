@@ -31,7 +31,7 @@
   services.greetd = {
     enable = true;
     
-    # FIX: Instruct systemd to spin up a fully compliant PAM login session.
+    # Instruct systemd to spin up a fully compliant PAM login session.
     # This automatically provisions a proper numeric /run/user/<UID> folder,
     # configures standard XDG variables, and sets up D-Bus paths cleanly.
     vt = 7;
@@ -42,11 +42,11 @@
     };
   };
 
-  # 2. FIXED: Nested properly inside a structured attribute set block
+  # 2. FIXED: All greeter system user keys are grouped inside a single attribute set
   users.users.greeter = {
     extraGroups = [ "video" "input" ];
     isSystemUser = true;
-    group = "greetd"; 
+    group = "greetd"; # greetd is the default group created by services.greetd
   };
 
   # 3. Declaratively output the greeter's configuration file onto the disk
@@ -64,7 +64,7 @@
   services.accounts-daemon.enable = true;
 
   # 5. Handle permanent state folder paths securely
-  # FIX: Removed the buggy /run/user line. Only keep the persistent state rules.
+  # Keep only persistent state rules. Dynamic run paths are generated via logind vt blocks.
   systemd.tmpfiles.rules = [
     "d /var/lib/noctalia-greeter 0755 greeter greetd - -"
   ];
