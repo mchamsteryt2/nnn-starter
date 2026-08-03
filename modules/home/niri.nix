@@ -5,10 +5,10 @@
 
     prefer-no-csd = true;
 
-    # FIXED: Pluralized option block 'window-rules' so it maps to the correct niri-flake schema definition
+    # FIXED: Corrected schema to use 'matches' instead of 'match' as per niri-flake specification
     window-rules = [
       {
-        match = {}; # Empty filter flags trigger on all apps unconditionally
+        matches = [ { } ]; # An empty attribute set matches all windows unconditionally
         open-maximized = true;
       }
     ];
