@@ -1,19 +1,17 @@
 {local, pkgs, ...}: {
-  # 1. Enable and configure Kitty explicitly inside your home profile context
-  programs.kitty = {
-    enable = true;
-    settings = {
-      scrollback_lines = 10000;
-      enable_audio_bell = false;
-      update_check_interval = 0; # Handled globally by NixOS channels
-    };
-  };
-
   programs.niri.settings = {
     # Stylix's niri target sets border/focus-ring colors and the cursor, so we
     # only describe behaviour here.
 
     prefer-no-csd = true;
+
+    # WINDOW RULE: Every newly initialized application tile opens fully maximized on both axes
+    window-rule = [
+      {
+        match = {}; # Empty filter flags trigger on all apps unconditionally
+        open-maximized = true;
+      }
+    ];
 
     input = {
       keyboard.xkb = {
@@ -22,22 +20,20 @@
       };
       # Each window remembers its own layout ("global" = one shared layout).
       keyboard.track-layout = "window";
-      
       touchpad = {
         tap = true;
-        natural-scroll = true; # Touchpad scrolling direction
+        natural-scroll = true; # Keeps touchpad gestures matching fluid scroll layouts
         dwt = true; # disable-while-typing
       };
-
-      # FIXED: Explicit scalar mapping to ensure the niri-flake homeModule 
-      # compiles without any flat-attribute-set merge exceptions.
+      
+      # FIXED SCROLL DIRECTION: Maps standard PC mouse wheel rotation vectors
       mouse.natural-scroll = false; 
       mouse.accel-profile = "flat";
-
+      
       focus-follows-mouse.enable = true;
     };
 
-    # ⇩ EDIT ME: name your outputs (`niri msg outputs` lists them) for scale/pos.
+    # Name your outputs (`niri msg outputs` lists them) for scale/pos.
     outputs."eDP-1" = {
       scale = local.monitorScale;
     };
@@ -74,7 +70,7 @@
     # actions take `{ }`; spawn takes a string or a list of argv strings.
     binds = {
       # Launchers
-      "Mod+Return".action.spawn = "kitty"; # FIXED: Successfully swapped ghostty out for kitty
+      "Mod+T".action.spawn = "kitty"; # FIXED: Correctly routes Mod+T shortcut directly to Kitty terminal
       # Noctalia v5 IPC: `noctalia msg <command>` (the old `ipc call` form and
       # the `noctalia-shell` binary are gone). The launcher is a named panel.
       "Mod+Space".action.spawn = [
@@ -88,7 +84,10 @@
 
       # Window management
       "Mod+Q".action.close-window = {};
-      "Mod+F".action.maximize-column = {};
+      
+      # FIXED MAXIMIZATION: Maps the true multi-axis maximize action block smoothly
+      "Mod+F".action.maximize-window-to-edges = {}; 
+      
       "Mod+Shift+F".action.fullscreen-window = {};
       "Mod+W".action.toggle-column-tabbed-display = {};
       "Mod+V".action.toggle-window-floating = {};
