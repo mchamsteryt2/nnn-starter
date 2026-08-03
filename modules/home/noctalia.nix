@@ -8,23 +8,14 @@
   programs.noctalia = {
     enable = true;
 
-    # FIXED: Wrap the default package to inject explicit runtime dependencies.
-    # This guarantees that when you click download in the GUI, the background 
-    # engine can find 'git' and 'bin' paths cleanly so the downloads don't fail.
-    package = (inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (oldAttrs: {
-      nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [ pkgs.makeWrapper ];
-      postInstall = (oldAttrs.postInstall or "") + ''
-        wrapProgram $out/bin/noctalia-shell \
-          --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.git pkgs.wget pkgs.curl pkgs.coreutils ]}
-      '';
-    }));
+    # Prebuilt package from noctalia.cachix.org (see modules/nixos/noctalia.nix).
+    package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
     # Run as a systemd user service tied to the graphical (niri) session so it
     # starts and stops with your login.
     systemd.enable = true;
 
-    # REGISTER SOURCING HUBS: Discover and index ALL available plugins automatically.
-    # By omitting the rigid "plugins.enabled" list, we allow the UI to handle toggles natively.
+    # REGISTER SOURCING HUBS: Noctalia clones these and discovers ALL available plugins inside them automatically.
     plugins.sources = [
       {
         enabled = true;
@@ -38,7 +29,16 @@
       }
     ];
 
-    # Sane defaults for global layout settings
+    # DECLARE ACTIVE LIST: You just list the folder names you want enabled. 
+    # Noctalia automatically maps, downloads, and spins them up on boot.
+    plugins.enabled = [
+      "noctalia/screen_recorder"
+      "noctalia/calculator"
+      "noctalia/timer"
+      "community/niri-workspaces"
+    ];
+
+    # Configure the shell appearance options natively right inside the module layout
     settings = {
       bar = {
         position = "top";
