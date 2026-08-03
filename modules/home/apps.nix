@@ -13,7 +13,9 @@
 
   # Firefox Browser Configuration
   programs.firefox = {
-    enable = true;
+  enable = true;
+  configPath = ".config/mozilla/firefox";
+};
     
     profiles.default = {
       id = 0;
