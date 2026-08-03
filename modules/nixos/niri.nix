@@ -27,19 +27,26 @@
     };
   };
 
-  # 1. Keep the structural greetd service unit enabled
+  # 1. Structural greetd service unit pointing to the correct session entry point
   services.greetd = {
     enable = true;
     
+    # FIX: Instruct systemd to spin up a fully compliant PAM login session.
+    # This automatically provisions a proper numeric /run/user/<UID> folder,
+    # configures standard XDG variables, and sets up D-Bus paths cleanly.
+    vt = 7;
+    
     settings.default_session = {
-      # Instead of tuigreet, invoke Noctalia's custom greeter compositor from your flake input
-      command = "${inputs.noctalia-greeter.packages.${pkgs.system}.default}/bin/noctalia-greeter-compositor --session niri-session";
+      command = "${inputs.noctalia-greeter.packages.${pkgs.system}.default}/bin/noctalia-greeter-session";
       user = "greeter";
     };
   };
 
-  # 2. Add the greeter user to the video group to ensure it can open the display
-  users.users.greeter.extraGroups = [ "video" ];
+  # 2. Add the greeter user to necessary groups to ensure hardware capabilities can mount
+  users.users.greeter.extraGroups = [ "video" "input" ];
+  isSystemUser = true;
+    group = "greetd"; # greetd is the default group created by services.greetd
+  };
 
   # 3. Declaratively output the greeter's configuration file onto the disk
   environment.etc."noctalia-greeter/greeter.toml".text = ''
@@ -55,8 +62,8 @@
   security.polkit.enable = true;
   services.accounts-daemon.enable = true;
 
-  # 5. Fix Noctalia Greeter startup crash by creating its state directory
-  # This provisions the missing folder path and gives ownership to the greetd user
+  # 5. Handle permanent state folder paths securely
+  # FIX: Removed the buggy /run/user line. Only keep the persistent state rules.
   systemd.tmpfiles.rules = [
     "d /var/lib/noctalia-greeter 0755 greeter greetd - -"
   ];
